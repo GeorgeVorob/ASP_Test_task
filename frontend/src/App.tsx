@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 export type weatherType = {
@@ -24,15 +23,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
           data:
         </p>
         {data?.map((el, index) => {
           return (<p key={index}>{el.date}  {el.summary}  ({el.temperatureC})</p>);
         })}
-      </header>
     </div>
   );
 }
