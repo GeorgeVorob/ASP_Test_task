@@ -17,9 +17,9 @@ namespace backend.Models.Project
         public IQueryable<Project> GetModelFilter(DbSet<Project> table)
         {
             IQueryable<Project> query = table.AsQueryable();
-            return this.SetModelFilter(query);
+            return this.GetModelFilter(query);
         }
-        public IQueryable<Project> SetModelFilter (IQueryable<Project> query)
+        public IQueryable<Project> GetModelFilter (IQueryable<Project> query)
         {
             // TODO: looks bad
             if (this.Name != null) query = query.Where(el => el.Name == this.Name);
