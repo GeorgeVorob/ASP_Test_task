@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
-using backend.Models.Project;
+
 
 namespace backend.Data
 {

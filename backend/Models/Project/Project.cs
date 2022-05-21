@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace backend.Models.Project
+namespace backend.Models
 {
     public class Project
     {
@@ -14,7 +14,10 @@ namespace backend.Models.Project
         public string Client { get; set; } // заказчик
         [Required]
         public string Performer { get; set; } // исполнитель
-        public List<Worker> Workers { get; set; } = new List<Worker>();
+
+        [InverseProperty("WorkingProjects")]
+        public List<Worker> Workers { get; set; }
+        [InverseProperty("ManagingProjects")]
         public Worker? Manager { get; set; } = null;
         [Required]
         public DateTime? StartDate { get; set; }

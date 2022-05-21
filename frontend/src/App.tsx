@@ -1,34 +1,25 @@
-import React, { useEffect, useState } from 'react';
 import './App.css';
 
-export type weatherType = {
-  date: string,
-  temperatureC: number,
-  temperatureF: number,
-  summary: string
-}
+import * as pages from './pages'
+import * as RB from 'react-bootstrap'
+
+import { Header } from './components';
+import { Projects } from './pages';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
-  const [data, setData] = useState<weatherType[]>([]);
-
-  useEffect(() => {
-    fetch("https://localhost:7085/weatherforecast").then(res => {
-      console.log("recieved res: ", res);
-      return (res.json() as any) as weatherType[];
-    }).then(_data => {
-      console.log("recieved data: ", _data);
-      setData(_data);
-    })
-  }, []);
-
   return (
     <div className="App">
-        <p>
-          data:
-        </p>
-        {data?.map((el, index) => {
-          return (<p key={index}>{el.date}  {el.summary}  ({el.temperatureC})</p>);
-        })}
+      <RB.Container fluid>
+        <RB.Row>
+          <Header></Header>
+        </RB.Row>
+        <RB.Row style={{ justifyContent: "center", alignContent: "baseline" }}>
+          <Routes>
+            <Route path="" element={<pages.Projects />} />
+          </Routes>
+        </RB.Row>
+      </RB.Container>
     </div>
   );
 }

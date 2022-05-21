@@ -12,8 +12,14 @@ namespace backend.Models
         public string Name { get; set; }
         public string? Surname { get; set; }
         public string? Patronymic { get; set; }
-        //TODO email property in model?
         [EmailAddress]
         public string? Email { get; set; }
+
+        [InverseProperty("Workers")]
+        public List<Project> WorkingProjects { get; set; } = new List<Project>();
+
+        [InverseProperty("Manager")]
+        public List<Project> ManagingProjects { get; set; } = new List<Project>();
+
     }
 }

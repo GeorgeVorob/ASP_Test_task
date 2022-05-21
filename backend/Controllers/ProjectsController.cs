@@ -1,8 +1,8 @@
 ﻿using backend.Data;
 using backend.Models;
-using backend.Models.Project;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -10,28 +10,26 @@ namespace backend.Controllers
     [Route("[controller]")]
     public class ProjectsController : ControllerBase
     {
-        private List<ProjectDto> ProjectsToDTOS(List<Project> projects)
-        {
-            List<ProjectDto> result = new List<ProjectDto>();
-            foreach (var project in projects)
-            {
-                result.Add(new ProjectDto());
-            }
-
-            return result;
-        }
-
-
         AppDbContext db;
         public ProjectsController(AppDbContext _db)
         {
             db = _db;
         }
+        private List<ProjectDto> ProjectsToDTOS(List<Project> projects)
+        {
+            List<ProjectDto> result = new List<ProjectDto>();
+            foreach (var project in projects)
+            {
+                result.Add(new ProjectDto(project));
+            }
+
+            return result;
+        }
 
         [HttpGet]
         public IActionResult Index()
         {
-            List<Project> projects = db.Projects.ToList();
+            List<Project> projects = db.Projects.Include(w=>w.Workers).ToList();
             return Ok(ProjectsToDTOS(projects));
         }
 
@@ -44,7 +42,7 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
-            List<Project> projects = filter.GetModelFilter(db.Projects).ToList();
+            List<Project> projects = filter.GetModelFilter(db.Projects.Include(p => p.Workers)).ToList();
 
             return Ok(ProjectsToDTOS(projects));
         }
@@ -55,27 +53,26 @@ namespace backend.Controllers
         {
             if (data.Id == null)
             {
-                return BadRequest("project's id to update is required");
+                return BadRequest(new { errorMessage = "project's id to update is required" });
             }
-            Project? projToUpdate = db.Projects.Find(data.Id);
+            Project? projToUpdate = db.Projects.Include(p => p.Workers).SingleOrDefault(p => p.Id == data.Id);
             if (projToUpdate == null)
             {
-                return BadRequest("unable to find given id");
+                return BadRequest(new { errorMessage = "unable to find given id" });
             }
             List<Worker> newWorkers = new List<Worker>();
             foreach (int id in data.WorkersIds)
             {
                 Worker? worker = db.Workers.Find(id);
-                if (worker == null) return BadRequest("not found worker id - " + id.ToString());
+                if (worker == null) return BadRequest(new { errorMessage = "not found worker id - " + id.ToString() });
                 newWorkers.Add(worker);
             }
             Worker? newManager = null;
             if (data.ManagerId != null)
             {
                 newManager = db.Workers.Find(data.ManagerId);
-                if (newManager == null) return BadRequest("not found worker id - " + data.ManagerId.ToString());
+                if (newManager == null) return BadRequest(new { errorMessage = "not found worker id - " + data.ManagerId.ToString() });
             }
-
             projToUpdate.Name = data.Name;
             projToUpdate.Client = data.Client;
             projToUpdate.Performer = data.Performer;
@@ -100,7 +97,7 @@ namespace backend.Controllers
             Project? projToDel = db.Projects.Find(id);
             if (projToDel == null)
             {
-                return BadRequest("unable to find given id");
+                return BadRequest(new { errorMessage = "unable to find given id" });
             }
 
             db.Projects.Remove(projToDel);
@@ -118,7 +115,7 @@ namespace backend.Controllers
             }
             if (data.Id != null)
             {
-                return BadRequest("id of new project must not be defined.");
+                return BadRequest(new { errorMessage = "id of new project must not be defined." });
             }
 
             Project proj = new Project()

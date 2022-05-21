@@ -1,0 +1,7 @@
+.navbar-nav {
+    align-items: center;
+}
+
+.navbar-nav>:not(:last-child) {
+    margin: 0px 10px 0px 0px;
+}

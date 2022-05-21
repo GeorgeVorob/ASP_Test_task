@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace backend.Models.Project
+namespace backend.Models
 {
     // объект фильтра от UI
     public class ProjectFilterDto
     {
+        public int? Id { get; set; }
         public string? Name { get; set; }
         public string? Client { get; set; }
         public string? Performer { get; set; }
@@ -22,9 +23,10 @@ namespace backend.Models.Project
         public IQueryable<Project> GetModelFilter (IQueryable<Project> query)
         {
             // TODO: looks bad
-            if (this.Name != null) query = query.Where(el => el.Name == this.Name);
-            if (this.Client != null) query = query.Where(el => el.Client == this.Client);
-            if (this.Performer != null) query = query.Where(el => el.Performer == this.Performer);
+            if (this.Id != null) query = query.Where(el => el.Id == this.Id);
+            if (this.Name != null) query = query.Where(el => el.Name.Contains(Name));
+            if (this.Client != null) query = query.Where(el => el.Client.Contains(Client));
+            if (this.Performer != null) query = query.Where(el => el.Performer.Contains(Performer));
             if (this.DateFrom != null) query = query.Where(el => el.StartDate >= this.DateFrom);
             if (this.DateTo != null) query = query.Where(el => el.StartDate <= this.DateTo);
             if (this.PriorityFrom != null) query = query.Where(el => el.Priority >= this.PriorityFrom);

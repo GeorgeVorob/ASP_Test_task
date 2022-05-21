@@ -1,0 +1,1 @@
+export const apiAddr = "https://localhost:7085"
