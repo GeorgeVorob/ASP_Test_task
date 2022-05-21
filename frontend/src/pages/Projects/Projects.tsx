@@ -4,6 +4,7 @@ import { Project, ProjectFilter, ProjectSort } from "../../models/models";
 import './Projects.css'
 import * as RB from 'react-bootstrap'
 import ProjectsEditor from "../../components/ProjectsEditor/ProjectsEditor";
+import ProjectsList from "../../components/ProjectsList/ProjectsList";
 
 
 const Projects = () => {
@@ -19,12 +20,8 @@ const Projects = () => {
         priorityFrom: undefined,
         priorityTo: undefined
     });
-    const [sort, setSort] = useState<ProjectSort>({
-        field: undefined,
-        ascending: true
-    });
 
-
+    //TODO: add debounce
     useEffect(() => {
         getFilteredProjects(filter).then(_data => {
             console.log("projects:", _data);
@@ -59,16 +56,6 @@ const Projects = () => {
         setSelected(null);
         deleteProject(id).then(res => {
             updateData();
-        });
-    }
-
-    //TODO: add debounce
-    const sortFormChangeHandle = (e: any) => {
-        let { name, value } = e.target;
-        if (name == "ascending") value = value == "true" ? true : false;
-        setSort({
-            ...sort,
-            [name]: value,
         });
     }
 
@@ -110,31 +97,10 @@ const Projects = () => {
         setSelected(empty);
     }
 
-
-    // apply sorting
-    var projectsToDisplay = [...projects];
-    if (sort.field != undefined) {
-        projectsToDisplay.sort((a, b) => {
-            let invert = sort.ascending == true ? 1 : -1;
-            if (a[sort.field!] > b[sort.field!])
-                return 1 * invert;
-            if (a[sort.field!] < b[sort.field!])
-                return -1 * invert;
-            if (a[sort.field!] == b[sort.field!])
-                return 0;
-
-            return 0;
-        });
-    }
-
-    console.log("sorted projects:", projectsToDisplay);
-
     return (
         <>
             <h3>Projects</h3>
-
             <RB.Row>
-                <RB.Col sm={4}>
                     <h5>Фильтр:</h5>
                     <form>
                         <input
@@ -191,50 +157,19 @@ const Projects = () => {
                             name="priorityTo"
                             onChange={(e) => filterFormChangeHandle(e)}
                         />
-                    </form>
-                </RB.Col>
-                <RB.Col>
-                    <h5>Сортировака:</h5>
-                    <form onChange={(e) => sortFormChangeHandle(e)}>
-                        <label>Поле</label>
-                        <select name="field" defaultValue={""} >
-                            <option>Не выбрано</option>
-                            <option value="name">Название</option>
-                            <option value="priority">Приоритет</option>
-                            <option value="startDate">Дата начала</option>
-                        </select><br />
-                        <input name="ascending" type="radio" value={"true"} defaultChecked />
-                        <label>По возрастанию</label> <br />
-                        <input name="ascending" type="radio" value={"false"} />
-                        <label>По убыванию</label> <br />
-                    </form>
-                </RB.Col>
-            </RB.Row>
-            <RB.Col sm={4}
-                style={{ maxHeight: "650px", overflowY: "scroll" }}
-            >
+                </form>
                 <RB.Button
                     variant="success"
                     style={{ maxWidth: 300 }}
                     onClick={newBtnHandle}
                 >Создать новый проект</RB.Button>
-                {projectsToDisplay.map((el, index) => {
-                    return (
-                        <RB.Card
-                            key={index}
-                            className="project-card"
-                            onClick={() => { selectProjectHandle(el.id as any) }}
-                            style={selected?.id == el.id ? { backgroundColor: "aquamarine" } : {}}
-                        >
-                            <RB.Card.Title>{el.name}</RB.Card.Title>
-                            <RB.Card.Subtitle>{el.startDate.toLocaleDateString()} - {el.endDate?.toLocaleDateString()}</RB.Card.Subtitle>
-                            <RB.Card.Subtitle>Клиент {el.client}</RB.Card.Subtitle>
-                            <RB.Card.Subtitle>Исполнитель {el.performer}</RB.Card.Subtitle>
-                            Приоритет {el.priority}
-                        </RB.Card>
-                    );
-                })}
-            </RB.Col>
+            </RB.Row>
+            <RB.Col sm={4}>
+                <ProjectsList
+                    projects={projects}
+                    selectCallback={selectProjectHandle}
+                />
+            </RB.Col>   
             <RB.Col sm={8}>
                 <ProjectsEditor
                     createCallback={createProjectHandle}
