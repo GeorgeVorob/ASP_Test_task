@@ -5,3 +5,13 @@
 .navbar-nav>:not(:last-child) {
     margin: 0px 10px 0px 0px;
 }
+.nav-link {
+    background-color: gray;
+    color: white !important;
+    transition: 0.3s;
+    border-radius: 5px;
+}
+
+.nav-link:hover {
+    background-color: rgb(43, 43, 43);
+}

@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import { addProject, deleteProject, getFilteredProjects, getProjects, getWorkers, updateProject } from "../../api/api";
-import { Project, ProjectFilter, ProjectSort, Worker } from "../../models/models";
+import { useState, useEffect } from "react";
+import { addProject, deleteProject, getFilteredProjects, updateProject } from "../../api/api";
+import { Project, ProjectFilter, ProjectSort } from "../../models/models";
 import './Projects.css'
 import * as RB from 'react-bootstrap'
-import { isConditionalExpression } from "typescript";
+import ProjectsEditor from "../../components/ProjectsEditor/ProjectsEditor";
 
 
 const Projects = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [selected, setSelected] = useState<Project | null>(null);
-    const [workers, setWorkers] = useState<Worker[]>([]);
+
     const [filter, setFilter] = useState<ProjectFilter>({
         name: "",
         client: "",
@@ -24,12 +24,6 @@ const Projects = () => {
         ascending: true
     });
 
-    useEffect(() => {
-        getWorkers().then(_workers => {
-            console.log("workers:", _workers);
-            setWorkers(_workers);
-        })
-    }, []);
 
     useEffect(() => {
         getFilteredProjects(filter).then(_data => {
@@ -68,18 +62,7 @@ const Projects = () => {
         });
     }
 
-    const selectedFormChangeHandle = (e: any) => {
-        if (selected) {
-            let { name, value } = e.target;
-            if (name == "startDate" || name == "endDate")
-                value = new Date(value);
-            setSelected({
-                ...selected,
-                [name]: value,
-            });
-        }
-    }
-
+    //TODO: add debounce
     const sortFormChangeHandle = (e: any) => {
         let { name, value } = e.target;
         if (name == "ascending") value = value == "true" ? true : false;
@@ -87,23 +70,6 @@ const Projects = () => {
             ...sort,
             [name]: value,
         });
-    }
-
-    const moveWorkersBtnHandle = (id: number, add: boolean) => {
-        if (selected) {
-            let newVal = { ...selected };
-            if (add && !newVal.workersIds.includes(id))
-                newVal.workersIds.push(id);
-            else
-                newVal.workersIds = newVal.workersIds.filter(w => w !== id);
-            setSelected(newVal);
-            console.log("new selected:", newVal);
-        }
-    }
-
-    const setManagerHandle = (id: number) => {
-        if (selected)
-            setSelected({ ...selected, managerId: id });
     }
 
     const updateProjectHandle = (proj: Project) => {
@@ -127,13 +93,6 @@ const Projects = () => {
         })
     }
 
-    const createOrUpdateBtnHandle = (proj: Project) => {
-        if (proj.id) {
-            updateProjectHandle(proj);
-        } else {
-            createProjectHandle(proj);
-        }
-    }
 
     const newBtnHandle = () => {
         console.log("a");
@@ -151,8 +110,6 @@ const Projects = () => {
         setSelected(empty);
     }
 
-    if (selected?.managerId)
-        var manager = workers.find(w => w.id! == selected.managerId);
 
     // apply sorting
     var projectsToDisplay = [...projects];
@@ -221,7 +178,7 @@ const Projects = () => {
                         <label>Приоритет от</label>
                         <input
                             placeholder=""
-                            value={filter.priorityFrom}
+                            value={filter.priorityFrom || ""}
                             type="number"
                             name="priorityFrom"
                             onChange={(e) => filterFormChangeHandle(e)}
@@ -229,7 +186,7 @@ const Projects = () => {
                         <label>до </label>
                         <input
                             placeholder=""
-                            value={filter.priorityTo}
+                            value={filter.priorityTo || ""}
                             type="number"
                             name="priorityTo"
                             onChange={(e) => filterFormChangeHandle(e)}
@@ -246,7 +203,7 @@ const Projects = () => {
                             <option value="priority">Приоритет</option>
                             <option value="startDate">Дата начала</option>
                         </select><br />
-                        <input name="ascending" type="radio" value={"true"} />
+                        <input name="ascending" type="radio" value={"true"} defaultChecked />
                         <label>По возрастанию</label> <br />
                         <input name="ascending" type="radio" value={"false"} />
                         <label>По убыванию</label> <br />
@@ -278,166 +235,13 @@ const Projects = () => {
                     );
                 })}
             </RB.Col>
-
-            {/*TODO: move to external component*/}
             <RB.Col sm={8}>
-                {selected === null ? (<h4>Выберите проект для просмотра\редактирования в списке</h4>) : (
-                    <>
-                        <form
-                            onSubmit={(e: any) => {
-                                console.log("e:", e);
-                                e.preventDefault();
-                                e.target.reportValidity();
-                                createOrUpdateBtnHandle(selected);
-                            }}
-                        >
-
-                            <RB.Row>
-                                <RB.Col sm={3}>
-                                    <label>Название</label><br />
-                                    <input
-                                        required
-                                        value={selected.name}
-                                        type="text"
-                                        name="name"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                    />
-                                </RB.Col>
-                                <RB.Col sm={3}>
-                                    <label>Клиент</label><br />
-                                    <input
-                                        required
-                                        value={selected.client}
-                                        type="text"
-                                        name="client"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                    />
-                                </RB.Col>
-                                <RB.Col sm={3}>
-                                    <label>Исполнитель</label><br />
-                                    <input
-                                        required
-                                        value={selected.performer}
-                                        type="text"
-                                        name="performer"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                    />
-                                </RB.Col>
-                                <RB.Col sm={3}>
-                                    <label>Дата начала</label><br />
-                                    <input
-                                        required
-                                        value={selected.startDate.toISOString().substring(0, 10)}
-                                        type="date"
-                                        name="startDate"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                        onKeyDown={(e) => e.preventDefault()}
-                                    />
-                                </RB.Col>
-                                <RB.Col sm={3}>
-                                    <label>Дата окончания</label><br />
-                                    <input
-                                        value={selected.endDate?.toISOString().substring(0, 10) || ""}
-                                        type="date"
-                                        name="endDate"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                        onKeyDown={(e) => e.preventDefault()}
-                                    />
-                                </RB.Col>
-                                <RB.Col sm={3}>
-                                    <label>Приоритет</label><br />
-                                    <input
-                                        required
-                                        value={selected.priority}
-                                        type="number"
-                                        name="priority"
-                                        onChange={(e) => selectedFormChangeHandle(e)}
-                                    />
-                                </RB.Col>
-                                <RB.Button
-                                    type="submit"
-                                    variant="success"
-                                    style={{ maxWidth: "300px", margin: "10px" }}>
-                                    {selected.id ? "Сохранить изменения" : "Создать"}
-                                </RB.Button>
-                            </RB.Row>
-                        </form>
-                        <h4>Менеджер - {manager?.surname} {manager?.name} {manager?.patronymic}
-                            {manager != undefined ?
-                                (
-                                    <RB.Button
-                                        variant="outline-danger"
-                                        onClick={() => setSelected({ ...selected, managerId: undefined })}
-                                    >X</RB.Button>
-                                ) : <></>}
-                        </h4>
-                        <RB.Row style={{ maxHeight: "1000px", overflowY: "scroll" }}>
-                            <RB.Col sm={6}>
-                                <RB.Table bordered hover size="sm">
-                                    <thead>
-                                        <tr>
-                                            <th>ФИО</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {workers.map((worker, index) => {
-                                            if (selected.workersIds.includes(worker.id as any))
-                                                return (<tr key={index}>
-                                                    <td>{worker.surname} {worker.name} {worker.patronymic}</td>
-                                                    <td>
-                                                        <RB.Button
-                                                            variant="outline-primary"
-                                                            onClick={() => { setManagerHandle(worker.id!) }}
-                                                        >
-                                                            Сделать менеджером
-                                                        </RB.Button>
-                                                        <RB.Button
-                                                            style={{ float: "right" }}
-                                                            variant="dark"
-                                                            onClick={() => { moveWorkersBtnHandle(worker.id!, false) }}
-                                                        > {"->"} </RB.Button>
-                                                    </td>
-                                                </tr>);
-                                        })}
-                                    </tbody>
-                                </RB.Table>
-                            </RB.Col>
-                            <RB.Col sm={6}>
-                                <RB.Table bordered hover size="sm">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>ФИО</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {workers.map((worker, index) => {
-                                            if (!selected.workersIds.includes(worker.id as any))
-                                                return (<tr key={index}>
-                                                    <td>
-                                                        <RB.Button
-                                                            variant="dark"
-                                                            onClick={() => { moveWorkersBtnHandle(worker.id!, true) }}
-                                                        > {"<-"} </RB.Button>
-                                                    </td>
-                                                    <td>{worker.surname} {worker.name} {worker.patronymic}</td>
-                                                </tr>);
-                                        })}
-                                    </tbody>
-                                </RB.Table>
-                            </RB.Col>
-                        </RB.Row>
-                        <RB.Row>
-                            <RB.Button
-                                variant="danger"
-                                onClick={() => { deleteBtnHandle(selected.id as any) }}
-                                style={{ maxWidth: "300px" }}>
-                                Удалить
-                            </RB.Button>
-                        </RB.Row>
-                    </>
-                )}
+                <ProjectsEditor
+                    createCallback={createProjectHandle}
+                    updateCallback={updateProjectHandle}
+                    deleteCallback={deleteBtnHandle}
+                    initialObject={selected}
+                />
             </RB.Col>
         </>
     )

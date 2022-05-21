@@ -1,5 +1,5 @@
 import { apiAddr } from "../config";
-import { Project, ProjectFilter, Worker } from "../models/models";
+import { Project, ProjectFilter, ProjectWorker } from "../models/models";
 
 const getProjects = (): Promise<Project[]> => {
     return fetch(apiAddr + "/projects")
@@ -93,10 +93,10 @@ const addProject = (proj: Project): Promise<string> => {
         });
 }
 
-const getWorkers = (): Promise<Worker[]> => {
+const getWorkers = (): Promise<ProjectWorker[]> => {
     return fetch(apiAddr + "/workers")
         .then(res => {
-            return (res.json() as any) as Worker[];
+            return (res.json() as any) as ProjectWorker[];
         })
 }
 

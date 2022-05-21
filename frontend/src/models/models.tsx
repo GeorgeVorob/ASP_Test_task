@@ -22,7 +22,7 @@ export type ProjectSort = {
     field?: "name" | "priority" | "startDate",
     ascending: boolean
 }
-export type Worker = {
+export type ProjectWorker = {
     id?: number,
     name: string,
     surname?: string,
