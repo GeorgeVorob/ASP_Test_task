@@ -22,12 +22,13 @@ export type ProjectSort = {
     field?: "name" | "priority" | "startDate",
     ascending: boolean
 }
+
 export type ProjectWorker = {
     id?: number,
     name: string,
     surname?: string,
     patronymic?: string,
     email?: string,
-    workingProjectsIds: number[],
-    managingProjectsIds: number[]
+    workingProjectsIds?: number[],
+    managingProjectsIds?: number[]
 }

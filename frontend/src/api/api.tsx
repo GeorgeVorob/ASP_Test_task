@@ -100,4 +100,62 @@ const getWorkers = (): Promise<ProjectWorker[]> => {
         })
 }
 
-export { getProjects, getFilteredProjects, deleteProject, updateProject, getWorkers, addProject }
+const deleteWorker = (id: number): Promise<string> => {
+    return fetch(apiAddr + "/workers/DeleteWorker?id=" + id, {
+        method: 'DELETE'
+    })
+        .then(res => {
+            if (res.ok)
+                return ""
+            else {
+                console.error((res.body as any));
+                return (res.body as any).errorMessage;
+            }
+        })
+}
+
+const updateWorker = (worker: ProjectWorker) => {
+    return fetch(apiAddr + "/workers/UpdateWorker",
+        {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: JSON.stringify(worker)
+        })
+        .then(res => {
+            if (res.ok)
+                return ""
+            else {
+                console.error((res.body as any));
+                return (res.body as any).errorMessage;
+            }
+        });
+}
+
+const addWorker = (worker: ProjectWorker) => {
+    return fetch(apiAddr + "/workers/AddWorker",
+        {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: JSON.stringify(worker)
+        })
+        .then(res => {
+            if (res.ok)
+                return ""
+            else {
+                console.error((res.body as any));
+                return (res.body as any).errorMessage;
+            }
+        });
+}
+
+export {
+    getProjects,
+    getFilteredProjects,
+    deleteProject,
+    updateProject,
+    getWorkers,
+    addProject,
+    deleteWorker,
+    updateWorker,
+    addWorker
+}

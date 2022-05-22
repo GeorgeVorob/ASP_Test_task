@@ -62,15 +62,42 @@ namespace backend.Controllers
             return Ok(new { InsertedId = wk.Id });
         }
 
+        [HttpPost]
+        [Route("UpdateWorker")]
+        public IActionResult UpdateWorker(WorkerDto data)
+        {
+            if (data.Id == null)
+            {
+                return BadRequest(new { errorMessage = "worker's id to update is required" });
+            }
+            //includes?
+            Worker? workerToUpdate = db.Workers.SingleOrDefault(p => p.Id == data.Id);
+            if (workerToUpdate == null)
+            {
+                return BadRequest(new { errorMessage = "unable to find given id" });
+            }
+
+            workerToUpdate.Name = data.Name;
+            workerToUpdate.Surname = data.Surname;
+            workerToUpdate.Patronymic = data.Patronymic;
+            workerToUpdate.Email = data.Email;
+
+            db.SaveChanges();
+            return Ok();
+        }
+
         [HttpDelete]
-        [Route("DeleteProject")]
-        public IActionResult DeleteProject([FromQuery, Required] int id)
+        [Route("DeleteWorker")]
+        public IActionResult DeleteWorker([FromQuery, Required] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            Worker? workerToDel = db.Workers.Find(id);
+            Worker? workerToDel = db.Workers
+                .Include(w => w.WorkingProjects)
+                .Include(w => w.ManagingProjects)
+                .SingleOrDefault(w => w.Id == id);
             if (workerToDel == null)
             {
                 return BadRequest(new { errorMessage = "unable to find given id" });

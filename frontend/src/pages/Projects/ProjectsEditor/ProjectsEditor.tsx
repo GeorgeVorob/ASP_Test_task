@@ -5,14 +5,14 @@ import { Project, ProjectWorker } from "../../../models/models";
 import * as RB from 'react-bootstrap'
 
 
-export type ProjectsFilterProps = {
+export type ProjectsEditorProps = {
     createCallback: (proj: Project) => void,
     updateCallback: (proj: Project) => void,
     deleteCallback: (id: number) => void,
     initialObject: Project | null
 }
 
-const ProjectsEditor = (props: ProjectsFilterProps) => {
+const ProjectsEditor = (props: ProjectsEditorProps) => {
     const [workers, setWorkers] = useState<ProjectWorker[]>([]);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
@@ -216,14 +216,17 @@ const ProjectsEditor = (props: ProjectsFilterProps) => {
                             </RB.Table>
                         </RB.Col>
                     </RB.Row>
+                    {editingProject.id ?
                     <RB.Row>
-                        <RB.Button
-                            variant="danger"
-                            onClick={() => { props.deleteCallback(editingProject.id as any) }}
-                            style={{ maxWidth: "300px" }}>
-                            Удалить
-                        </RB.Button>
-                    </RB.Row>
+                            <RB.Button
+                                variant="danger"
+                                onClick={() => { props.deleteCallback(editingProject.id as any) }}
+                                style={{ maxWidth: "300px" }}>
+                                Удалить
+                            </RB.Button>
+                        </RB.Row>
+                        : <></>}
+
                 </>
             )}
         </>

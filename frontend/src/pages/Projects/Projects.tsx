@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { addProject, deleteProject, getFilteredProjects, updateProject } from "../../api/api";
-import { Project, ProjectFilter, ProjectSort } from "../../models/models";
-import './Projects.css'
+import { Project, ProjectFilter } from "../../models/models";
 import * as RB from 'react-bootstrap'
 import ProjectsEditor from "./ProjectsEditor/ProjectsEditor";
 import ProjectsList from "./ProjectsList/ProjectsList";
@@ -51,7 +50,7 @@ const Projects = () => {
         setSelected(projects.find(el => el.id == id) || null);
     }
 
-    const deleteBtnHandle = (id: number): void => {
+    const deleteBtnCallback = (id: number): void => {
         setProjects(projects.filter(el => el.id != id));
         setSelected(null);
         deleteProject(id).then(res => {
@@ -59,7 +58,7 @@ const Projects = () => {
         });
     }
 
-    const updateProjectHandle = (proj: Project) => {
+    const updateProjectCallback = (proj: Project) => {
         let newData: Project[] = [...projects];
         let indexToChange = newData.findIndex(p => p.id == proj.id);
         newData[indexToChange] = proj;
@@ -69,7 +68,7 @@ const Projects = () => {
         })
     }
 
-    const createProjectHandle = (proj: Project) => {
+    const createProjectCallback = (proj: Project) => {
         if (proj.id) {
             console.error("attempted to add project with speicified id!");
             return;
@@ -172,9 +171,9 @@ const Projects = () => {
             </RB.Col>   
             <RB.Col sm={8}>
                 <ProjectsEditor
-                    createCallback={createProjectHandle}
-                    updateCallback={updateProjectHandle}
-                    deleteCallback={deleteBtnHandle}
+                    createCallback={createProjectCallback}
+                    updateCallback={updateProjectCallback}
+                    deleteCallback={deleteBtnCallback}
                     initialObject={selected}
                 />
             </RB.Col>
