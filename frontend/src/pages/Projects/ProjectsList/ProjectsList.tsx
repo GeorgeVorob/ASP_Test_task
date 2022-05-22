@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Project, ProjectSort } from "../../models/models";
+import { Project, ProjectSort } from "../../../models/models";
 import * as RB from 'react-bootstrap'
 import './ProjectsList.css'
 

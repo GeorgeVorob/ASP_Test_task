@@ -3,8 +3,8 @@ import { addProject, deleteProject, getFilteredProjects, updateProject } from ".
 import { Project, ProjectFilter, ProjectSort } from "../../models/models";
 import './Projects.css'
 import * as RB from 'react-bootstrap'
-import ProjectsEditor from "../../components/ProjectsEditor/ProjectsEditor";
-import ProjectsList from "../../components/ProjectsList/ProjectsList";
+import ProjectsEditor from "./ProjectsEditor/ProjectsEditor";
+import ProjectsList from "./ProjectsList/ProjectsList";
 
 
 const Projects = () => {

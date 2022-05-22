@@ -11,8 +11,11 @@ const Header = () => {
                         <Navbar.Brand>
                             <h1>Navbar</h1>
                         </Navbar.Brand>
-                        <Nav.Link as={NavLink} to='' className="nav-element">
+                        <Nav.Link as={NavLink} to='/projects' className="nav-element">
                             Проекты
+                        </Nav.Link>
+                        <Nav.Link as={NavLink} to='/workers' className="nav-element">
+                            Сотрудники
                         </Nav.Link>
                     </Nav>
                 </Navbar>

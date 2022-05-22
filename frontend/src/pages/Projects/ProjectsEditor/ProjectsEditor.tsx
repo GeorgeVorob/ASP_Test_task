@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getWorkers } from "../../api/api";
-import { Project, ProjectWorker } from "../../models/models";
+import { getWorkers } from "../../../api/api";
+import { Project, ProjectWorker } from "../../../models/models";
 
 import * as RB from 'react-bootstrap'
 

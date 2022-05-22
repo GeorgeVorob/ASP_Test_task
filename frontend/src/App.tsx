@@ -16,7 +16,8 @@ function App() {
         </RB.Row>
         <RB.Row style={{ justifyContent: "center", alignContent: "baseline" }}>
           <Routes>
-            <Route path="" element={<pages.Projects />} />
+            <Route path="/projects" element={<pages.Projects />} />
+            <Route path="/workers" element={<pages.Workers />} />
           </Routes>
         </RB.Row>
       </RB.Container>

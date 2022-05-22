@@ -2,7 +2,7 @@
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace backend.Controllers
 {
@@ -60,6 +60,25 @@ namespace backend.Controllers
             db.Workers.Add(wk);
             db.SaveChanges();
             return Ok(new { InsertedId = wk.Id });
+        }
+
+        [HttpDelete]
+        [Route("DeleteProject")]
+        public IActionResult DeleteProject([FromQuery, Required] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            Worker? workerToDel = db.Workers.Find(id);
+            if (workerToDel == null)
+            {
+                return BadRequest(new { errorMessage = "unable to find given id" });
+            }
+
+            db.Workers.Remove(workerToDel);
+            db.SaveChanges();
+            return Ok();
         }
 
     }
