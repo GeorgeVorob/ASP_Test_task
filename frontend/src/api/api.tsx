@@ -1,5 +1,5 @@
 import { apiAddr } from "../config";
-import { Project, ProjectFilter, ProjectWorker } from "../models/models";
+import { Project, ProjectFilter, ProjectTask, ProjectWorker } from "../models/models";
 
 const getProjects = (): Promise<Project[]> => {
     return fetch(apiAddr + "/projects")
@@ -148,6 +148,33 @@ const addWorker = (worker: ProjectWorker) => {
         });
 }
 
+const getTasks = (projectId?: number): Promise<ProjectTask[]> => {
+    var str = "";
+    if (projectId) str = "?projectId=" + projectId;
+
+    return fetch(apiAddr + "/tasks" + str)
+        .then(res => {
+            return res.json();
+        })
+}
+
+const updateTasks = (tasks: ProjectTask[], projectId: number) => {
+    return fetch(apiAddr + "/tasks/UpdateTasks?projectId=" + projectId,
+        {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            body: JSON.stringify(tasks)
+        })
+        .then(res => {
+            if (res.ok)
+                return ""
+            else {
+                console.error((res.body as any));
+                return (res.body as any).errorMessage;
+            }
+        });
+}
+
 export {
     getProjects,
     getFilteredProjects,
@@ -157,5 +184,7 @@ export {
     addProject,
     deleteWorker,
     updateWorker,
-    addWorker
+    addWorker,
+    getTasks,
+    updateTasks
 }

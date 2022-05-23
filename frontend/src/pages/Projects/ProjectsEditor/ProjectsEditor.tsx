@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
-import { getWorkers } from "../../../api/api";
-import { Project, ProjectWorker } from "../../../models/models";
+import { getTasks, getWorkers } from "../../../api/api";
+import { Project, ProjectTask, ProjectWorker } from "../../../models/models";
 
 import * as RB from 'react-bootstrap'
 
 
 export type ProjectsEditorProps = {
     createCallback: (proj: Project) => void,
-    updateCallback: (proj: Project) => void,
+    updateCallback: (proj: Project, taks: ProjectTask[]) => void,
     deleteCallback: (id: number) => void,
     initialObject: Project | null
 }
 
 const ProjectsEditor = (props: ProjectsEditorProps) => {
     const [workers, setWorkers] = useState<ProjectWorker[]>([]);
+    const [tasks, setTasks] = useState<ProjectTask[]>([]);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
 
@@ -25,12 +26,20 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
     }, []);
 
     useEffect(() => {
-        setEditingProject(props.initialObject ? { ...props.initialObject } : null);
+        if (props.initialObject) {
+            setEditingProject({ ...props.initialObject });
+            getTasks(props.initialObject.id).then(res => {
+                setTasks(res);
+            })
+        } else {
+            setEditingProject(null);
+            setTasks([]);
+        }
     }, [props.initialObject])
 
     const createOrUpdateBtnHandle = (proj: Project) => {
         if (proj.id) {
-            props.updateCallback(proj);
+            props.updateCallback(proj, tasks);
         } else {
             props.createCallback(proj);
         }
@@ -48,6 +57,41 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
         }
     }
 
+    const tasksFormHandle = (e: any, taskId: number) => {
+        let { name, value } = e.target;
+        console.log("name:", name);
+        console.log("value:", value);
+        console.log("id:", taskId);
+        let newTasks = [...tasks];
+        let idToChange = newTasks.findIndex(t => t.id == taskId);
+        newTasks[idToChange] = { ...newTasks[idToChange], [name]: value };
+        console.log("old tasks:", tasks);
+        console.log("new tasks", newTasks);
+        setTasks(newTasks);
+    }
+
+    const newTaskBtnHandle = () => {
+        setTasks([
+            ...tasks,
+            {
+                id: undefined,
+                name: "",
+                authorId: undefined,
+                implementerId: undefined,
+                status: "ToDo",
+                comment: "",
+                priority: 0,
+                projectId: props.initialObject!.id!
+            }
+        ]);
+    }
+
+    const deleteTaskBtnHandle = (taskId: number) => {
+        let newTasks: ProjectTask[] = [...tasks];
+        newTasks = newTasks.filter(t => t.id != taskId);
+        setTasks(newTasks);
+    }
+
     const moveWorkersBtnHandle = (id: number, add: boolean) => {
         if (editingProject) {
             let newVal = { ...editingProject };
@@ -56,7 +100,6 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
             else
                 newVal.workersIds = newVal.workersIds.filter(w => w !== id);
             setEditingProject(newVal);
-            console.log("new selected:", newVal);
         }
     }
 
@@ -67,6 +110,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
 
     if (editingProject?.managerId)
         var manager = workers.find(w => w.id! == editingProject.managerId);
+    console.log("tasks to print:", tasks);
     return (
         <>
             {editingProject === null ? (<h4>Выберите проект для просмотра\редактирования в списке</h4>) : (
@@ -174,6 +218,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                             return (<tr key={index}>
                                                 <td>{worker.surname} {worker.name} {worker.patronymic}</td>
                                                 <td>
+                                                    {/*Вообще кнопки в таблицу вставлять не хорошо, но удобно*/}
                                                     <RB.Button
                                                         variant="outline-primary"
                                                         onClick={() => { setManagerHandle(worker.id!) }}
@@ -216,13 +261,103 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                             </RB.Table>
                         </RB.Col>
                     </RB.Row>
+                    {editingProject.id ? (<>
+                        <RB.Row>
+                            <RB.Button variant="success"
+                                style={{ maxWidth: "300px" }}
+                                onClick={newTaskBtnHandle}
+                            >Новая задача
+                            </RB.Button>
+                            <RB.Table bordered
+                                style={{ maxHeight: "700px", overflowY: "scroll" }}
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Автор</th>
+                                        <th>Испонитель</th>
+                                        <th>Статус</th>
+                                        <th>Комментарий</th>
+                                        <th>Приоритет</th>
+                                        <th>X</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tasks.map((task, index) => {
+                                        return (<tr key={index}>
+                                            <td><input
+                                                type="text"
+                                                value={task.name}
+                                                name="name"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            ></input></td>
+
+                                            <td><select
+                                                value={task.authorId}
+                                                name="authorId"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            >
+                                                {workers.map((wk, index) => {
+                                                    return <option
+                                                        key={index}
+                                                        value={wk.id}
+                                                    >{wk.name}</option>
+                                                })}
+                                            </select></td>
+
+                                            <td><select
+                                                value={task.implementerId}
+                                                name="implementerId"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            >
+                                                {workers.map((wk, index) => {
+                                                    return <option
+                                                        key={index}
+                                                        value={wk.id}
+                                                    >{wk.name}</option>
+                                                })}
+                                            </select></td>
+                                            <td><select
+                                                value={task.status}
+                                                name="status"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            >
+                                                <option value="ToDo">ToDo</option>
+                                                <option value="InProgress">InProgress</option>
+                                                <option value="Done">Done</option>
+                                            </select></td>
+                                            <td><input
+                                                type="text"
+                                                value={task.comment}
+                                                name="comment"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            ></input></td>
+                                            <td><input
+                                                type="number"
+                                                value={task.priority}
+                                                name="priority"
+                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                            ></input></td>
+                                            <td>
+                                                <RB.Button
+                                                    variant="outline-danger"
+                                                    onClick={() => deleteTaskBtnHandle(task.id!)}
+                                                >X</RB.Button>
+                                            </td>
+                                        </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </RB.Table>
+                        </RB.Row>
+                    </>) : (<></>)}
                     {editingProject.id ?
-                    <RB.Row>
+                        <RB.Row>
                             <RB.Button
                                 variant="danger"
                                 onClick={() => { props.deleteCallback(editingProject.id as any) }}
                                 style={{ maxWidth: "300px" }}>
-                                Удалить
+                                Удалить проект
                             </RB.Button>
                         </RB.Row>
                         : <></>}

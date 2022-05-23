@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { addProject, deleteProject, getFilteredProjects, updateProject } from "../../api/api";
-import { Project, ProjectFilter } from "../../models/models";
+import { addProject, deleteProject, getFilteredProjects, updateProject, updateTasks } from "../../api/api";
+import { Project, ProjectFilter, ProjectTask } from "../../models/models";
 import * as RB from 'react-bootstrap'
 import ProjectsEditor from "./ProjectsEditor/ProjectsEditor";
 import ProjectsList from "./ProjectsList/ProjectsList";
@@ -58,14 +58,17 @@ const Projects = () => {
         });
     }
 
-    const updateProjectCallback = (proj: Project) => {
+    const updateProjectCallback = (proj: Project, tasks: ProjectTask[]) => {
         let newData: Project[] = [...projects];
         let indexToChange = newData.findIndex(p => p.id == proj.id);
         newData[indexToChange] = proj;
         setProjects(newData);
         updateProject(proj).then(res => {
             updateData();
-        })
+        });
+        updateTasks(tasks, proj.id!).then(res => {
+            updateData();
+        });
     }
 
     const createProjectCallback = (proj: Project) => {
@@ -76,12 +79,11 @@ const Projects = () => {
         addProject(proj).then(res => {
             updateData();
             setSelected(null);
-        })
+        });
     }
 
 
     const newBtnHandle = () => {
-        console.log("a");
         var empty: Project = {
             id: undefined,
             name: "",

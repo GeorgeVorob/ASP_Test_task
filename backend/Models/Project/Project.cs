@@ -17,6 +17,8 @@ namespace backend.Models
 
         [InverseProperty("WorkingProjects")]
         public List<Worker> Workers { get; set; }
+        [ForeignKey("Manager")]
+        public int? ManagerId { get; set; }
         [InverseProperty("ManagingProjects")]
         public Worker? Manager { get; set; } = null;
         [Required]
@@ -24,5 +26,6 @@ namespace backend.Models
         public DateTime? EndDate { get; set; }
         [Required]
         public int Priority { get; set; } = 0;
+        public List<ProjectTask> Tasks { get; set; }
     }
 }

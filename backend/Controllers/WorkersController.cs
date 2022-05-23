@@ -8,7 +8,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WorkersController : Controller
+    public class WorkersController : ControllerBase
     {
         AppDbContext db;
         public WorkersController(AppDbContext _db)

@@ -11,5 +11,6 @@ namespace backend.Data
         public AppDbContext(DbContextOptions options) : base(options) { }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Worker> Workers { get; set; }
+        public DbSet<ProjectTask> ProjectTasks { get; set; }
     }
 }

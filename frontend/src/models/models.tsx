@@ -32,3 +32,14 @@ export type ProjectWorker = {
     workingProjectsIds?: number[],
     managingProjectsIds?: number[]
 }
+
+export type ProjectTask = {
+    id?: number,
+    name?: string,
+    authorId?: number,
+    implementerId?: number,
+    status: "ToDo" | "InProgress" | "Done",
+    comment?: string,
+    priority: number,
+    projectId: number
+}

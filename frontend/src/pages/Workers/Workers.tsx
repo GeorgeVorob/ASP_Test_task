@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { addWorker, deleteWorker, getWorkers, updateWorker } from "../../api/api";
-import { ProjectWorker } from "../../models/models";
+import { ProjectTask, ProjectWorker } from "../../models/models";
 import * as RB from 'react-bootstrap'
 import WorkersList from "./WorkersList/WorkersList";
 import WorkersEditor from "./WorkersEditor/WorkersEditor";
@@ -67,7 +67,7 @@ const Workers = () => {
 
     return (
         <>
-            <h3>Projects</h3>
+            <h3>Workers</h3>
             <RB.Row>
                 <RB.Button
                     variant="success"

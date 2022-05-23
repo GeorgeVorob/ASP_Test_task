@@ -22,7 +22,6 @@ namespace backend.Controllers
             {
                 result.Add(new ProjectDto(project));
             }
-
             return result;
         }
 
@@ -55,7 +54,11 @@ namespace backend.Controllers
             {
                 return BadRequest(new { errorMessage = "project's id to update is required" });
             }
-            Project? projToUpdate = db.Projects.Include(p => p.Workers).SingleOrDefault(p => p.Id == data.Id);
+            Project? projToUpdate = db.Projects
+                .Include(p => p.Workers)
+                .Include(p => p.Tasks)
+                .SingleOrDefault(p => p.Id == data.Id);
+
             if (projToUpdate == null)
             {
                 return BadRequest(new { errorMessage = "unable to find given id" });

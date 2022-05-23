@@ -49,8 +49,6 @@ const ProjectsList = (props: ProjectsListProps) => {
             return 0;
         });
     }
-    console.log("DBG projects:", projects);
-    console.log("DBG displayed:", projectsToDisplay);
     return (
         <>
             <RB.Row>
@@ -75,6 +73,7 @@ const ProjectsList = (props: ProjectsListProps) => {
                 style={{ maxHeight: "650px", overflowY: "scroll" }}
             >
                 {projectsToDisplay.map((el, index) => {
+                    /*TODO: Если в workers.tsx выбрать новый проект, то тут не пропадает селект*/
                     return (
                         <RB.Card
                             key={index}
