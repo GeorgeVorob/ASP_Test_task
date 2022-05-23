@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
@@ -27,5 +28,42 @@ namespace backend.Models
         [Required]
         public int Priority { get; set; } = 0;
         public List<ProjectTask> Tasks { get; set; }
+
+        public bool SetValuesFromDTO(ProjectDto dto, AppDbContext db, out object error)
+        {
+            Name = dto.Name;
+            Client = dto.Client;
+            Performer = dto.Performer;
+            StartDate = dto.StartDate;
+            EndDate = dto.EndDate;
+            Priority = dto.Priority;
+
+            List<Worker> newWorkers = new List<Worker>();
+            foreach (int id in dto.WorkersIds)
+            {
+                Worker? worker = db.Workers.Find(id);
+                if (worker == null)
+                {
+                    error = new { errorMessage = "not found worker id - " + id.ToString() };
+                    return false;
+                }
+                newWorkers.Add(worker);
+            }
+            Worker? newManager = null;
+            if (dto.ManagerId != null)
+            {
+                newManager = db.Workers.Find(dto.ManagerId);
+                if (newManager == null)
+                {
+                    error = new { errorMessage = "not found worker id - " + dto.ManagerId.ToString() };
+                    return false;
+                }
+            }
+
+            Workers = newWorkers;
+            Manager = newManager;
+            error = new { };
+            return true;
+        }
     }
 }

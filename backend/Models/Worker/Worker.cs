@@ -21,5 +21,13 @@ namespace backend.Models
         [InverseProperty("Manager")]
         public List<Project> ManagingProjects { get; set; } = new List<Project>();
 
+        public void SetValuesFromDTO(WorkerDto dto)
+        {
+            Name = dto.Name;
+            Surname = dto.Surname;
+            Patronymic = dto.Patronymic;
+            Email = dto.Email;
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 import { apiAddr } from "../config";
 import { Project, ProjectFilter, ProjectTask, ProjectWorker } from "../models/models";
 
+//TODO: объеденить в класс?
 const getProjects = (): Promise<Project[]> => {
     return fetch(apiAddr + "/projects")
         .then(res => {
@@ -26,7 +27,7 @@ const getFilteredProjects = (filter: ProjectFilter): Promise<Project[]> => {
             delete _filter[param];
             continue;
         }
-        //TODO: рефакторинг дат, пока с типом Date от typescript рабоатется плохо
+        //TODO: рефакторинг дат, пока с типом Date рабоатется плохо
         if (Date.prototype.isPrototypeOf(_filter[param])) {
             _filter[param] = (new Date(_filter[param])).toJSON();
         }

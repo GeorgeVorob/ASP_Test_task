@@ -20,7 +20,7 @@ namespace backend.Models
             IQueryable<Project> query = table.AsQueryable();
             return this.GetModelFilter(query);
         }
-        public IQueryable<Project> GetModelFilter (IQueryable<Project> query)
+        public IQueryable<Project> GetModelFilter(IQueryable<Project> query)
         {
             // TODO: looks bad
             if (this.Id != null) query = query.Where(el => el.Id == this.Id);

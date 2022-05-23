@@ -21,14 +21,14 @@ namespace Tests
 
                     WorkersController controller = new WorkersController(db);
 
-                    db.Workers.Add(new Worker()
+                    controller.AddWorker(new WorkerDto()
                     {
-                        Name = "Ivan",
+                        Name= "Ivan",
                         Surname = "Ivanov",
-                        Patronymic = "Ivanovich"
+                        Patronymic= "Ivanovich",
+                        WorkingProjectsIds = Array.Empty<int>(),
+                        ManagingProjectsIds = Array.Empty<int>()
                     });
-
-                    db.SaveChanges();
 
                     Worker wk = db.Workers.First();
                     Assert.True(wk.Name.Equals("Ivan"));
@@ -65,10 +65,15 @@ namespace Tests
 
                     db.SaveChanges();
 
-                    Worker wk = db.Workers.First();
-                    wk.Name = "Ivan2";
-
-                    db.SaveChanges();
+                    controller.UpdateWorker(new WorkerDto()
+                    {
+                        Id = 1,
+                        Name = "Ivan2",
+                        Surname = "Ivanov",
+                        Patronymic = "Ivanovich",
+                        WorkingProjectsIds = Array.Empty<int>(),
+                        ManagingProjectsIds = Array.Empty<int>()
+                    });
 
                     Worker wk2 = db.Workers.First();
                     Assert.True(wk2.Name == "Ivan2");

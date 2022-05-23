@@ -16,7 +16,7 @@ namespace backend.Models
         [Required]
         public int? Priority { get; set; }
         [Required]
-        public int? ProjectId { get; set;}
+        public int? ProjectId { get; set; }
 
         public ProjectTaskDto() { }
 

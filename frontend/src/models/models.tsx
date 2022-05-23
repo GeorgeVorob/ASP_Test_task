@@ -1,3 +1,4 @@
+//TODO: методы для генерации значений по умолчанию?
 export type Project = {
     id?: number,
     name: string,

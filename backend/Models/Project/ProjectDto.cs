@@ -1,10 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-    // Не уверен зачем именно DTO, разве что для отделения Сотрудников и Менеджера от данных самого проекта
-    // Скорее просто захотелось сделать в рамках тестового задания.
     public class ProjectDto
     {
         public ProjectDto() { }

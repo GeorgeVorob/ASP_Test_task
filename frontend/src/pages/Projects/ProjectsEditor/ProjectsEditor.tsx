@@ -17,7 +17,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
     const [tasks, setTasks] = useState<ProjectTask[]>([]);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
-
+//TODO: просто загрузка вообще всех работников?
     useEffect(() => {
         getWorkers().then(_workers => {
             console.log("workers:", _workers);
@@ -45,6 +45,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
         }
     }
 
+    //TODO(для всех подобных методов) заменить этот ужас на готовое решение по работе с формами.
     const selectedFormChangeHandle = (e: any) => {
         if (editingProject) {
             let { name, value } = e.target;
@@ -59,14 +60,9 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
 
     const tasksFormHandle = (e: any, taskId: number) => {
         let { name, value } = e.target;
-        console.log("name:", name);
-        console.log("value:", value);
-        console.log("id:", taskId);
         let newTasks = [...tasks];
         let idToChange = newTasks.findIndex(t => t.id == taskId);
         newTasks[idToChange] = { ...newTasks[idToChange], [name]: value };
-        console.log("old tasks:", tasks);
-        console.log("new tasks", newTasks);
         setTasks(newTasks);
     }
 
@@ -76,8 +72,8 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
             {
                 id: undefined,
                 name: "",
-                authorId: undefined,
-                implementerId: undefined,
+                authorId: workers[0].id,
+                implementerId: workers[0].id,
                 status: "ToDo",
                 comment: "",
                 priority: 0,
@@ -195,6 +191,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                         </RB.Row>
                     </form>
                     <h4>Менеджер - {manager?.surname} {manager?.name} {manager?.patronymic}
+                        {/*TODO: много таких сравнений в самых дебрях jsx, сделать для них стейт?*/}
                         {manager != undefined ?
                             (
                                 <RB.Button
@@ -218,7 +215,6 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                             return (<tr key={index}>
                                                 <td>{worker.surname} {worker.name} {worker.patronymic}</td>
                                                 <td>
-                                                    {/*Вообще кнопки в таблицу вставлять не хорошо, но удобно*/}
                                                     <RB.Button
                                                         variant="outline-primary"
                                                         onClick={() => { setManagerHandle(worker.id!) }}
@@ -282,6 +278,9 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                         <th>X</th>
                                     </tr>
                                 </thead>
+                                {/*TODO: Инпуты для тасков ниже не вызывают браузерную проверку формы, валидации вообще нет*/}
+
+                                {/*Делать формы в строках таблицы странно и неправлиьно, но очень удобно*/}
                                 <tbody>
                                     {tasks.map((task, index) => {
                                         return (<tr key={index}>

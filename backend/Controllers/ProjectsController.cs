@@ -28,7 +28,7 @@ namespace backend.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Project> projects = db.Projects.Include(w=>w.Workers).ToList();
+            List<Project> projects = db.Projects.Include(w => w.Workers).ToList();
             return Ok(ProjectsToDTOS(projects));
         }
 
@@ -63,27 +63,11 @@ namespace backend.Controllers
             {
                 return BadRequest(new { errorMessage = "unable to find given id" });
             }
-            List<Worker> newWorkers = new List<Worker>();
-            foreach (int id in data.WorkersIds)
+            object errorMsg;
+            if (projToUpdate.SetValuesFromDTO(data, db, out errorMsg) == false)
             {
-                Worker? worker = db.Workers.Find(id);
-                if (worker == null) return BadRequest(new { errorMessage = "not found worker id - " + id.ToString() });
-                newWorkers.Add(worker);
+                return BadRequest(errorMsg);
             }
-            Worker? newManager = null;
-            if (data.ManagerId != null)
-            {
-                newManager = db.Workers.Find(data.ManagerId);
-                if (newManager == null) return BadRequest(new { errorMessage = "not found worker id - " + data.ManagerId.ToString() });
-            }
-            projToUpdate.Name = data.Name;
-            projToUpdate.Client = data.Client;
-            projToUpdate.Performer = data.Performer;
-            projToUpdate.Workers = newWorkers;
-            projToUpdate.Manager = newManager;
-            projToUpdate.StartDate = data.StartDate;
-            projToUpdate.EndDate = data.EndDate;
-            projToUpdate.Priority = data.Priority;
 
             db.SaveChanges();
             return Ok();
@@ -121,15 +105,15 @@ namespace backend.Controllers
                 return BadRequest(new { errorMessage = "id of new project must not be defined." });
             }
 
-            Project proj = new Project()
+
+
+            Project proj = new Project();
+            object errorMsg;
+            if (proj.SetValuesFromDTO(data, db, out errorMsg) == false)
             {
-                Name = data.Name,
-                Client = data.Client,
-                Performer = data.Performer,
-                StartDate = data.StartDate,
-                EndDate = data.EndDate,
-                Priority = data.Priority
-            };
+                return BadRequest(errorMsg);
+            }
+
             db.Projects.Add(proj);
             db.SaveChanges();
             return Ok(new { InsertedId = proj.Id });

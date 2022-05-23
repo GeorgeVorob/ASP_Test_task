@@ -33,7 +33,7 @@ namespace backend.Models
             Implementer = db.Workers.SingleOrDefault(w => w.Id == taskDto.ImplementerId);
             Status = (ProjectTaskStatus)Enum.Parse(typeof(ProjectTaskStatus), taskDto.Status);
             Comment = taskDto.Comment;
-            //TODO: эти поля в DTO nullable для того, чтобы их заваливл ModelState, надо как-то сделать нормально
+            //TODO: эти поля в DTO nullable для того, чтобы их заваливал ModelState, надо как-то сделать нормально без приведения, думаю
             Priority = (int)taskDto.Priority;
             ProjectId = (int)taskDto.ProjectId;
             Project = db.Projects.Single(p => p.Id == taskDto.ProjectId);

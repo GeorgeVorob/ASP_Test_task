@@ -9,7 +9,7 @@ const Header = () => {
                 <Navbar>
                     <Nav className="m-auto">
                         <Navbar.Brand>
-                            <h1>Navbar</h1>
+                            <h3>Страницы:</h3>
                         </Navbar.Brand>
                         <Nav.Link as={NavLink} to='/projects' className="nav-element">
                             Проекты

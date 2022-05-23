@@ -35,9 +35,9 @@ const WorkersList = (props: WorkersListProps) => {
                             style={selectedId == el.id ? { backgroundColor: "aquamarine" } : {}}
                         >
                             <RB.Card.Title>
-                                {el.surname}
-                                {el.name}
-                                {el.patronymic}
+                                {el.surname + " "}
+                                {el.name + " "}
+                                {el.patronymic + " "}
                             </RB.Card.Title>
                             <RB.Card.Subtitle>{el.email}</RB.Card.Subtitle>
                         </RB.Card>

@@ -32,7 +32,7 @@ namespace backend.Controllers
         {
             List<Worker> workers = db.Workers
                 .Include(w => w.WorkingProjects)
-                .Include(w=>w.ManagingProjects)
+                .Include(w => w.ManagingProjects)
                 .ToList();
             return Ok(WorkersToDTOS(workers));
         }
@@ -77,10 +77,7 @@ namespace backend.Controllers
                 return BadRequest(new { errorMessage = "unable to find given id" });
             }
 
-            workerToUpdate.Name = data.Name;
-            workerToUpdate.Surname = data.Surname;
-            workerToUpdate.Patronymic = data.Patronymic;
-            workerToUpdate.Email = data.Email;
+            workerToUpdate.SetValuesFromDTO(data);
 
             db.SaveChanges();
             return Ok();
