@@ -11,7 +11,7 @@ export type ProjectsEditorProps = {
     deleteCallback: (id: number) => void,
     initialObject: Project | null
 }
-
+//FIXME: кажется, что-то вызывает огромное кол-во ререндеров
 const ProjectsEditor = (props: ProjectsEditorProps) => {
     const [workers, setWorkers] = useState<ProjectWorker[]>([]);
     const [tasks, setTasks] = useState<ProjectTask[]>([]);
@@ -20,7 +20,6 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
 //TODO: просто загрузка вообще всех работников?
     useEffect(() => {
         getWorkers().then(_workers => {
-            console.log("workers:", _workers);
             setWorkers(_workers);
         })
     }, []);
@@ -58,11 +57,10 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
         }
     }
 
-    const tasksFormHandle = (e: any, taskId: number) => {
+    const tasksFormHandle = (e: any, taskArrayIndex: number) => {
         let { name, value } = e.target;
         let newTasks = [...tasks];
-        let idToChange = newTasks.findIndex(t => t.id == taskId);
-        newTasks[idToChange] = { ...newTasks[idToChange], [name]: value };
+        newTasks[taskArrayIndex] = { ...newTasks[taskArrayIndex], [name]: value };
         setTasks(newTasks);
     }
 
@@ -106,7 +104,6 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
 
     if (editingProject?.managerId)
         var manager = workers.find(w => w.id! == editingProject.managerId);
-    console.log("tasks to print:", tasks);
     return (
         <>
             {editingProject === null ? (<h4>Выберите проект для просмотра\редактирования в списке</h4>) : (
@@ -288,13 +285,13 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                                 type="text"
                                                 value={task.name}
                                                 name="name"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             ></input></td>
 
                                             <td><select
                                                 value={task.authorId}
                                                 name="authorId"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             >
                                                 {workers.map((wk, index) => {
                                                     return <option
@@ -307,7 +304,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                             <td><select
                                                 value={task.implementerId}
                                                 name="implementerId"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             >
                                                 {workers.map((wk, index) => {
                                                     return <option
@@ -319,7 +316,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                             <td><select
                                                 value={task.status}
                                                 name="status"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             >
                                                 <option value="ToDo">ToDo</option>
                                                 <option value="InProgress">InProgress</option>
@@ -329,13 +326,13 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                                 type="text"
                                                 value={task.comment}
                                                 name="comment"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             ></input></td>
                                             <td><input
                                                 type="number"
                                                 value={task.priority}
                                                 name="priority"
-                                                onChange={(e) => tasksFormHandle(e, task.id!)}
+                                                onChange={(e) => tasksFormHandle(e, index)}
                                             ></input></td>
                                             <td>
                                                 <RB.Button

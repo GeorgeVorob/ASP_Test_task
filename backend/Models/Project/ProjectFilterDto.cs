@@ -23,14 +23,14 @@ namespace backend.Models
         public IQueryable<Project> GetModelFilter(IQueryable<Project> query)
         {
             // TODO: looks bad
-            if (this.Id != null) query = query.Where(el => el.Id == this.Id);
-            if (this.Name != null) query = query.Where(el => el.Name.Contains(Name));
-            if (this.Client != null) query = query.Where(el => el.Client.Contains(Client));
-            if (this.Performer != null) query = query.Where(el => el.Performer.Contains(Performer));
-            if (this.DateFrom != null) query = query.Where(el => el.StartDate >= this.DateFrom);
-            if (this.DateTo != null) query = query.Where(el => el.StartDate <= this.DateTo);
-            if (this.PriorityFrom != null) query = query.Where(el => el.Priority >= this.PriorityFrom);
-            if (this.PriorityTo != null) query = query.Where(el => el.Priority <= this.PriorityTo);
+            if (Id != null) query = query.Where(el => el.Id == this.Id);
+            if (Name != null) query = query.Where(el => el.Name.Contains(Name));
+            if (Client != null) query = query.Where(el => el.Client.Contains(Client));
+            if (Performer != null) query = query.Where(el => el.Performer.Contains(Performer));
+            if (DateFrom != null) query = query.Where(el => el.StartDate >= this.DateFrom);
+            if (DateTo != null) query = query.Where(el => el.EndDate <= this.DateTo);
+            if (PriorityFrom != null) query = query.Where(el => el.Priority >= this.PriorityFrom);
+            if (PriorityTo != null) query = query.Where(el => el.Priority <= this.PriorityTo);
 
             return query;
         }
