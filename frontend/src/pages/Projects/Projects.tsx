@@ -23,20 +23,17 @@ const Projects = () => {
     //TODO: add debounce
     useEffect(() => {
         getFilteredProjects(filter).then(_data => {
-            console.log("projects:", _data);
             setProjects(_data);
         })
     }, [filter]);
 
     const updateData = () => {
         getFilteredProjects(filter).then(_data => {
-            console.log("projects:", _data);
             setProjects(_data);
         })
     }
 
     const filterFormChangeHandle = (e: any) => {
-        console.log("updated filter:", e.target.value);
         let { name, value } = e.target;
         if (name == "dateFrom" || name == "dateTo")
             value = value === "" ? undefined : new Date(value);
@@ -58,7 +55,7 @@ const Projects = () => {
         });
     }
 
-    const updateProjectCallback = (proj: Project, tasks: ProjectTask[]) => {
+    const updateProjectCallback = (proj: Project, tasks: ProjectTask[]): Promise<void> => {
         let newData: Project[] = [...projects];
         let indexToChange = newData.findIndex(p => p.id == proj.id);
         newData[indexToChange] = proj;
@@ -66,7 +63,8 @@ const Projects = () => {
         updateProject(proj).then(res => {
             updateData();
         });
-        updateTasks(tasks, proj.id!).then(res => {
+        //FIXME: при обновлении проекта стейт тасков с компоненте не обновляется сам
+        return updateTasks(tasks, proj.id!).then(res => {
             updateData();
         });
     }

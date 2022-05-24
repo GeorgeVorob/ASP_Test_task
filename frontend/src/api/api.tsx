@@ -17,7 +17,6 @@ const getProjects = (): Promise<Project[]> => {
 }
 
 const getFilteredProjects = (filter: ProjectFilter): Promise<Project[]> => {
-    console.log("filter:", filter);
     var _filter: any = { ...filter };
     for (let param in _filter) {
         if (_filter[param] === undefined

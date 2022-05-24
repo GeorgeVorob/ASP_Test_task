@@ -52,7 +52,6 @@ const Workers = () => {
     }
 
     const newBtnHandle = () => {
-        console.log("a");
         var empty: ProjectWorker = {
             id: undefined,
             name: "",

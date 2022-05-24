@@ -7,7 +7,8 @@ import * as RB from 'react-bootstrap'
 
 export type ProjectsEditorProps = {
     createCallback: (proj: Project) => void,
-    updateCallback: (proj: Project, taks: ProjectTask[]) => void,
+    //FIXME: при обновлении проекта стейт тасков с компоненте не обновляется сам
+    updateCallback: (proj: Project, taks: ProjectTask[]) => Promise<void>,
     deleteCallback: (id: number) => void,
     initialObject: Project | null
 }
@@ -38,7 +39,13 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
 
     const createOrUpdateBtnHandle = (proj: Project) => {
         if (proj.id) {
-            props.updateCallback(proj, tasks);
+            props.updateCallback(proj, tasks)
+                .then(() => {
+                    //FIXME: при обновлении проекта стейт тасков с компоненте не обновляется сам
+                    getTasks(props.initialObject!.id).then(res => {
+                        setTasks(res);
+                    })
+                });
         } else {
             props.createCallback(proj);
         }
@@ -80,9 +87,9 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
         ]);
     }
 
-    const deleteTaskBtnHandle = (taskId: number) => {
+    const deleteTaskBtnHandle = (taskArrayIndex: number) => {
         let newTasks: ProjectTask[] = [...tasks];
-        newTasks = newTasks.filter(t => t.id != taskId);
+        newTasks.splice(taskArrayIndex, 1);
         setTasks(newTasks);
     }
 
@@ -110,7 +117,6 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                 <>
                     <form
                         onSubmit={(e: any) => {
-                            console.log("e:", e);
                             e.preventDefault();
                             e.target.reportValidity();
                             createOrUpdateBtnHandle(editingProject);
@@ -275,19 +281,21 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                         <th>X</th>
                                     </tr>
                                 </thead>
-                                {/*TODO: Инпуты для тасков ниже не вызывают браузерную проверку формы, валидации вообще нет*/}
+                                {/*TODO: Инпуты для тасков ниже не вызывают браузерную проверку формы, клиентской валидации вообще нет*/}
 
                                 {/*Делать формы в строках таблицы странно и неправлиьно, но очень удобно*/}
                                 <tbody>
                                     {tasks.map((task, index) => {
-                                        return (<tr key={index}>
+                                        return (<tr
+                                            style={task.id ? {} : { backgroundColor: "wheat" }}
+                                            key={index}>
                                             <td><input
                                                 type="text"
                                                 value={task.name}
                                                 name="name"
                                                 onChange={(e) => tasksFormHandle(e, index)}
                                             ></input></td>
-
+                                            {/*TODO: выпадающих списков надолго не хватит, если сотрудников станет хоть чуть-чтуь больше */}
                                             <td><select
                                                 value={task.authorId}
                                                 name="authorId"
@@ -337,7 +345,7 @@ const ProjectsEditor = (props: ProjectsEditorProps) => {
                                             <td>
                                                 <RB.Button
                                                     variant="outline-danger"
-                                                    onClick={() => deleteTaskBtnHandle(task.id!)}
+                                                    onClick={() => deleteTaskBtnHandle(index)}
                                                 >X</RB.Button>
                                             </td>
                                         </tr>
